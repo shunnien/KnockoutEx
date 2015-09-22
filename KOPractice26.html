@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>KO Practice26 ko.computed()的效能考量</title>
+    <script src="Scripts/jquery-2.1.0.min.js"></script>
+    <!--<script src="Scripts/knockout-3.0.0.js"></script>-->
+    <script src="Scripts/knockout-3.0.0.debug.js"></script>
+
+    <script type="text/javascript">
+        function MyViewModel()
+        {
+            var self = this;
+            self.items = ko.observableArray();
+            self.max = ko.computed(function ()
+            {
+                var ary = self.items();
+                var max = null;
+                for (var i = 0; i < ary.length; i++)
+                {
+                    if (max == null || ary[i] > max) max = ary[i];
+                }
+                return max;
+            });
+            self.min = ko.computed(function ()
+            {
+                var ary = self.items();
+                var min = null;
+                for (var i = 0; i < ary.length; i++)
+                {
+                    if (min == null || ary[i] < min) min = ary[i];
+                }
+                return min;
+            });
+            self.sum = ko.computed(function ()
+            {
+                var ary = self.items();
+                var sum = 0;
+                for (var i = 0; i < ary.length; i++)
+                {
+                    sum += ary[i];
+                }
+                return sum
+            });
+            self.avg = ko.computed(function ()
+            {
+                var ary = self.items();
+                if (ary.length == 0) return 0;
+                return parseFloat(self.sum()) / ary.length;
+            });
+        }
+
+        $(function ()
+        {
+            var vm = new MyViewModel();
+            ko.applyBindings(vm);
+            for (var i = 1; i < 10000; i++)
+            {
+                vm.items.push(i);
+            }
+        });
+    </script>
+</head>
+<body>
+    <h2>KO練習26 - ko.computed()的效能考量</h2>
+    <hr />
+    <div>
+        Max: <span data-bind="text: max"></span>
+        Min: <span data-bind="text: min"></span>
+        Sum: <span data-bind="text: sum"></span>
+        Avg: <span data-bind="text: avg"></span>
+    </div>
+    <hr />
+    <a href="PracticeIndex.html">首頁</a>
+</body>
+</html>

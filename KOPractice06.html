@@ -1,0 +1,152 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>KO Practice06 陣列元素的新增/移除事件</title>
+        <script src="Scripts/jquery-2.1.0.min.js"></script>
+        <script src="Scripts/knockout-3.0.0.js"></script>
+
+        <style>
+            table
+            {
+                width: 400px;
+            }
+
+            td, th
+            {
+                border: 1px solid gray;
+                text-align: center;
+            }
+
+            .new
+            {
+                color: blue;
+            }
+        </style>
+
+        <script>
+            function UserViewModel(id, name, score)
+            {
+                var self = this;
+                self.id = id;
+                self.name = name;
+                self.score = ko.observable(score);
+            }
+
+            function MyViewModel()
+            {
+                var self = this;
+                self.users = ko.observableArray();
+
+                //移除User，輸入參數為user物件
+                //foreach產生的元素，click事件時會帶入該元素所繫結的資料物件
+                self.removeUser = function (user)
+                {
+                    self.users.remove(user);
+                };
+
+                //分數加總，透過神奇的 Dendency Tracking 功能
+                //一旦有任何User分數更動，它就會自動更新
+                self.totalScore = ko.computed(function ()
+                {
+                    var total = 0;
+                    $.each(self.users(), function (i, u)
+                    {
+                        //改用.score()
+                        total += u.score();
+                    });
+                    return total;
+                });
+
+                // 第一次 foreach 產生時不會觸發，只有事後加入才會
+                self.afterAddEvent = function (elems, idx, data)
+                {
+                    // Template 中的 Text Node 與 Element Node 會分別觸發多次
+                    // 在本例中會因 Text, Element, Text 共觸發三次
+                    // 透過 nodeType 過濾，只處理 Element Node
+                    if (elems.nodeType == 1)  // Element Node
+                    {
+                        $(".new").removeClass("new");
+                        $(elems).addClass("new");
+                    }
+                };
+
+                //注意: 掛載beforeRemove事件後，要自已負責移除被刪除元素
+                self.b4RemoveEvent = function (elems, idx, data)
+                {
+                    if (elems.nodeType == 1)
+                    {
+                        $(elems)
+                        .css("background-color", "red")
+                        .animate({ opacity: 0.2 }, 500, function ()
+                        {
+                            $(this).remove();
+                        })
+
+                    }
+                };
+
+            }
+
+            $(function ()
+            {
+                var vm = new MyViewModel();
+                //預先增加一些User
+                vm.users.push(new UserViewModel("M1", "Test11", 32767));
+                vm.users.push(new UserViewModel("M2", "test0002", 65535));
+
+                //按鈕時動態增加User
+                var c = 3;
+                $("#btnAddUser").click(function ()
+                {
+                    var now = new Date(); //用時間產生隨機屬性值
+                    vm.users.push(new UserViewModel(
+                        "M" + c++,
+                        "P" + "-" + now.getSeconds() * now.getMilliseconds(),
+                        now.getMilliseconds()));
+                });
+
+                ko.applyBindings(vm);
+            });
+        </script>
+
+    </head>
+    <body>
+        <h2>KO練習06 - 陣列元素的新增/移除事件</h2>
+        <hr />
+        <input type="button" value="新增User" id="btnAddUser" />
+        共
+        <span data-bind="text: users().length"></span>
+        筆，合計
+        <span data-bind="text: totalScore"></span>
+        分
+        <table>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>姓名</th>
+                    <th>積分</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: { data: users, afterAdd: afterAddEvent, beforeRemove: b4RemoveEvent }">
+                <tr>
+                    <td>
+                        <span data-bind="text: id"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: name"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: score" style='text-align: right'></span>
+                    </td>
+                    <td>
+                        <a href='#' data-bind="click: $root.removeUser">移除</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <hr />
+        <a href="PracticeIndex.html">首頁</a>
+    </body>
+</html>

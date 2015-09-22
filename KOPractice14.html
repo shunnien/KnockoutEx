@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>KO Practice14 JavaScript物件與JSON轉換</title>
+        <script src="Scripts/jquery-2.1.0.min.js"></script>
+        <script src="Scripts/knockout-3.0.0.js"></script>
+        <script src="Scripts/knockout.mapping-latest.debug.js"></script>
+
+        <script type="text/javascript">
+            function MyViewModel()
+            {
+                var self = this;
+                self.name = ko.observable("林志玲");
+                self.height = ko.observable(174);
+                self.weight = ko.observable(52);
+            }
+            var michelle = { name: "陳研希", height: 160, weight: 45 };
+            var guilunmei = { name: "桂綸鎂", height: 164, weight: 46 }
+            $(function ()
+            {
+                var vm = new MyViewModel();
+                //將現有JavaScript物件轉為ViewModel
+                $("#b1").click(function ()
+                {
+                    //方法1: 自己寫程式設定各欄位
+                    vm.name(michelle.name);
+                    vm.height(michelle.height);
+                    vm.weight(michelle.weight);
+                    //vm.name("陳研希");
+                    //vm.height(160);
+                    //vm.weight(45);
+                });
+                $("#b2").click(function ()
+                {
+                    //var guilunmei = { name: "桂綸鎂", height: 164, weight: 46 }
+                    //方法2: 透過Knockout Mapping Plug-In(可透過NuGet取得)
+                    ko.mapping.fromJS(guilunmei, {}, vm);
+                });
+                ko.applyBindings(vm);
+            });
+        </script>
+    </head>
+    <body>
+        <h2>KO練習14 - JavaScript物件與JSON轉換</h2>
+        <hr />
+        <dl>
+            <dt>姓名</dt>
+            <dd>
+                <input type="text" data-bind="value: name" />
+            </dd>
+            <dt>身高</dt>
+            <dd>
+                <input type="text" data-bind="value: height" />
+            </dd>
+            <dt>體重</dt>
+            <dd>
+                <input type="text" data-bind="value: weight" />
+            </dd>
+        </dl>
+        <div style="margin: 10px;">
+            <input type="button" id="b1" value="JS物件轉ViewModel 1" />
+            <input type="button" id="b2" value="JS物件轉ViewModel 2" />
+        </div>
+        <div>JSON.stringify</div>
+        <pre data-bind="text: JSON.stringify($root)"></pre>
+        <div>ko.toJSON</div>
+        <pre data-bind="text: ko.toJSON($root)"></pre>
+        <div>ko.mapping.toJSON</div>
+        <pre data-bind="text: ko.mapping.toJSON($root)"></pre>
+        <hr />
+        <a href="PracticeIndex.html">首頁</a>
+    </body>
+</html>

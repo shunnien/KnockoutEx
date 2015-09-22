@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>KO Practice08 if及with的應用</title>
+
+        <script src="Scripts/jquery-2.1.0.min.js"></script>
+        <script src="Scripts/knockout-3.0.0.js"></script>
+
+        <script type="text/javascript">
+            function player(name)
+            {
+                var self = this;
+                self.name = ko.observable(name);
+                self.bestRecord = ko.observable();
+                self.setBestRecord = function (d, s)
+                {
+                    self.bestRecord({
+                        date: d, score: s
+                    });
+                };
+            }
+
+            function MyViewModel()
+            {
+                var self = this;
+                self.players = ko.observableArray();
+            }
+
+            $(function ()
+            {
+                var vm = new MyViewModel();
+                //第一筆資料有最佳成績(含日期及分數)
+                var p1 = new player("BBB");
+                p1.setBestRecord("2014-03-19", 65535);
+                vm.players.push(p1);
+                //第二筆資料無日期
+                var p2 = new player("TEst2");
+                p2.setBestRecord(null, 555);
+                vm.players.push(p2);
+                //第三筆資料無資料
+                var p3 = new player("Third");
+                vm.players.push(p3);
+                ko.applyBindings(vm);
+            });
+        </script>
+
+        <style>
+            span
+            {
+                margin: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>KO練習08 - if及with的應用</h2>
+        <hr />
+        <ul data-bind="foreach: players">
+            <li>
+                <span data-bind="text: name"></span>
+
+                <!-- 使用if判斷，有最佳成績時才處理 -->
+                <span data-bind="if: bestRecord">(最佳成績: 
+                <span data-bind="text: bestRecord().score"></span>
+                於 
+                <span data-bind="text: bestRecord().date"></span>
+                )
+
+                <!-- 使用with有if的效果，bestRecord()有內容時，
+                    span的內容才會出現在DOM中，而且Binding Context會 
+                    切成bestRecord，所以bestRecord().score直接寫成score即可 -->
+
+                <!--<span data-bind="with: bestRecord">(最佳成績:
+                    <span data-bind="text: score"></span>
+                於 
+                <span data-bind="text: date"></span>
+                )-->
+                </span>
+            </li>
+        </ul>
+        <hr />
+        <a href="PracticeIndex.html">首頁</a>
+    </body>
+</html>

@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>KO Practice01 計算型屬性</title>
+
+    <script src="Scripts/jquery-2.1.0.min.js"></script>
+    <script src="Scripts/knockout-3.0.0.js"></script>
+
+    <script type="text/javascript">
+
+        //將 ViewModel 宣告成 function，方便擴充額外功能
+        function MyViewModel()
+        {
+            //由於 this 在不同範圍代表意義有別，習慣上使用 self 代表 ViewModel 本體，不易混淆
+            var self = this;
+            self.lastName = ko.observable('許');
+            self.firstName = ko.observable('XX');
+            self.fullName = ko.computed(function () {
+                return self.lastName() + self.firstName();
+            });
+        }
+
+        $(function () {
+            ko.applyBindings(new MyViewModel());
+        })
+    </script>
+</head>
+<body>
+    <h2>KO練習01 - 計算型屬性</h2>
+    <hr />
+    <table>
+        <thead><tr><th>名稱</th><th>輸入框</th><th>名稱</th><th>輸入框</th><th>名稱</th><th>顯示</th></tr></thead>
+        <tbody>
+            <tr>
+                <td>姓氏</td>
+                <td><input type="text" data-bind="value: lastName"/></td>
+                <td>名字</td>
+                <td><input type="text" data-bind="value: firstName"</td>
+                <td>姓名</td>
+                <td><span data-bind="text: fullName"></span></td>
+            </tr>
+        </tbody>
+    </table>
+    <hr />
+    <a href="PracticeIndex.html">首頁</a>
+</body>
+</html>

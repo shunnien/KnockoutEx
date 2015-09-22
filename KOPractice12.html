@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>KO Practice12 使用自訂繫結整合KendoUI</title>
+        <script src="Scripts/jquery-2.1.0.min.js"></script>
+        <script src="Scripts/knockout-3.0.0.js"></script>
+        
+        <script src="http://cdn.kendostatic.com/2014.1.318/js/kendo.all.min.js"></script>
+        <link rel="stylesheet" href="http://cdn.kendostatic.com/2014.1.318/styles/kendo.common.min.css" />
+        <link rel="stylesheet" href="http://cdn.kendostatic.com/2014.1.318/styles/kendo.metro.min.css" />
+
+        <!--<script src="Scripts/kendo.web.min.js"></script>-->
+        <!--<link href="CSS/kendo.common.min.css" rel="stylesheet" />-->
+        <!--<link href="CSS/kendo.metro.min.css" rel="stylesheet" />-->
+
+        <script type="text/javascript">
+            //自訂繫結時，基本寫法是在ko.bindingHandlers加上自訂物件
+            ko.bindingHandlers.kendoDate = {
+                init: function (element, valueAccessor, allBindingsAccessor, viewModel)
+                {
+                    // 第一次繫結時觸發, 主要用來設定初值、為元素加上外掛、掛載事件... 等
+
+                    //element指向對象元素
+                    var $elem = $(element);
+                    //透過valueAccess()可取得繫結標的
+                    var val = valueAccessor();
+                    //透過allBindingsAccessor可取到同一data-bind中其他設定
+                    var allBindParams = allBindingsAccessor();
+
+                    //轉換成日期選擇器
+                    $elem.kendoDatePicker({
+                        //用unwrapObservable的好處不管observable或一般屬性，均能順利取值
+                        value: ko.utils.unwrapObservable(val),
+                        //取得日期格式, 使用||技巧補上未指定時的預設值
+                        format: allBindParams.kendoDateFormat || "yyyy/MM/dd",
+                        //使用者選取日期後更新屬性
+                        change: function (e)
+                        {
+                            var dp = $elem.data("kendoDatePicker");
+                            //將值設定回ViewModel屬性
+                            if (ko.isObservable(val))
+                                val(dp._value);
+                        }
+                    });
+
+                },
+                update: function (element, valueAccessor, allBindingsAccessor, viewModel)
+                {
+                    // 第一次繫結及之後每次繫結對象值改變時觸發，主要用來更新元素反應資料改變
+                    //將ViewModel的屬性值設定到Kendo UI DatePicker上
+                    var kdd = $(element).data("kendoDatePicker");
+                    kdd.value(ko.utils.unwrapObservable(valueAccessor()));
+                }
+            };
+
+            function MyViewModel()
+            {
+                var self = this;
+                self.regDate = ko.observable(new Date(2014, 03, 21));
+                self.regDateDisp = ko.computed(function ()
+                {
+                    return kendo.toString(self.regDate(), "yyyy/MM/dd");
+                });
+                self.setToday = function () { self.regDate(new Date()) };
+            }
+
+            $(function ()
+            {
+                ko.applyBindings(new MyViewModel());
+            });
+        </script>
+    </head>
+    <body>
+        <h2>KO練習12 - 使用自訂繫結整合KendoUI</h2>
+        <hr />
+        <input type="button" value="Set Today" data-bind="click: setToday" />
+        <br />
+        <input type="text" data-bind="kendoDate: regDate" />
+        <input type="text" data-bind="kendoDate: regDate, kendoDateFormat: 'yyyy-MM-dd'" />
+        <hr />
+        <a href="PracticeIndex.html">首頁</a>
+    </body>
+</html>

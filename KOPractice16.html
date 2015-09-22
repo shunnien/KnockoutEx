@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>KO Practice16 可寫入式ko.computed()</title>
+    <script src="Scripts/jquery-2.1.0.min.js"></script>
+    <script src="Scripts/knockout-3.0.0.js"></script>
+
+    <script type="text/javascript">
+        function MyViewModel()
+        {
+            var self = this;
+            self.latitude = ko.observable(23.5);
+            self.longitude = ko.observable(121.5);
+            self.location = ko.computed({
+                //讀取時傳回經緯度合併
+                read: function ()
+                {
+                    return self.latitude() + "," + self.longitude();
+                },
+                //寫入時拆解成兩欄，檢核未過時不處理
+                write: function (value)
+                {
+                    var p = value.split(',');
+                    if (p.length == 2 && !isNaN(p[0]) && !isNaN(p[1]))
+                    {
+                        //檢核成功, 分別設定緯度、經度
+                        self.latitude(p[0]);
+                        self.longitude(p[1]);
+                    }
+                }
+            });
+        }
+
+        $(function ()
+        {
+            ko.applyBindings(new MyViewModel());
+        });
+    </script>
+</head>
+<body>
+    <h2>KO練習16 - 可寫入式ko.computed()</h2>
+    <hr />
+    <dl>
+        <dt>Latitude</dt>
+        <dd>
+            <input data-bind="value: latitude" /></dd>
+        <dt>longitude</dt>
+        <dd>
+            <input data-bind="value: longitude" /></dd>
+        <dt>Location</dt>
+        <dd>
+            <input data-bind="value: location" /></dd>
+    </dl>
+    <input type="button" value="Do Nothing" />
+    <hr />
+    <a href="PracticeIndex.html">首頁</a>
+</body>
+</html>

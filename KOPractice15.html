@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>KO Practice15 訂閱屬性變更事件</title>
+    <script src="Scripts/jquery-2.1.0.min.js"></script>
+    <script src="Scripts/knockout-3.0.0.js"></script>
+
+    <script type="text/javascript">
+        function MyViewModel() {
+            var self = this;
+            self.name = ko.observable("TestName");
+            self.score = ko.observable(1000);
+        }
+        var viewModel = new MyViewModel();
+
+        //** 方法1 **
+        //直接訂閱，在屬性變化時執行指定邏輯
+        viewModel.name.subscribe(function (newValue) {
+            alert("Name = " + newValue);
+        });
+
+        //** 方法2 **
+        //透過extenders為observable加上擴充功能
+        //在ko.extenders上宣告新方法alertChange，
+        //第一個參數為observable本身
+        //第二個參數為呼叫時傳入自行定義的額外物件，本例中為標題文字
+        ko.extenders.alertChange = function (target, header) {
+            target.subscribe(function (newValue) {
+                alert(header + " -> " + newValue);
+            });
+            //傳回observable本身, 以支援串接寫法
+            return target;
+        }
+
+        //透過observable().extend()可呼叫先前定義的擴充功能
+        viewModel.score.extend({ alertChange: "[Score]" });
+
+        $(function () {
+            ko.applyBindings(viewModel);
+        });
+    </script>
+</head>
+<body>
+    <h2>KO練習15 - 訂閱屬性變更事件</h2>
+    <hr />
+    <dl>
+        <dt>Name</dt>
+        <dd><input data-bind="value: name" /></dd>
+        <dt>Score</dt>
+        <dd><input data-bind="value: score" /></dd>
+    </dl>
+    <hr />
+    <a href="PracticeIndex.html">首頁</a>
+</body>
+</html>

@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>KO Practice17 ko.computed實現資料檢核</title>
+    <script src="Scripts/jquery-2.1.0.min.js"></script>
+    <script src="Scripts/knockout-3.0.0.js"></script>
+
+    <script type="text/javascript">
+        function MyViewModel()
+        {
+            var self = this;
+            //實際用以儲存數值的observable
+            self.acceptedNumericValue = ko.observable(123);
+            //標示前次寫入資料是否有效的旗標
+            self.lastInputWasValid = ko.observable(true);
+
+            //用computed模擬只接受數字的屬性
+            self.attemptedValue = ko.computed({
+                //讀取時直接由obervable傳回內容
+                read: self.acceptedNumericValue,
+                //寫入時進行檢核
+                write: function (value)
+                {
+                    //寫入值若不是數字, 不更新至observable, 
+                    //並將有效旗標設為false;
+                    if (isNaN(value))
+                        self.lastInputWasValid(false);
+                    else
+                    {
+                        //寫入值有效，旗標設true，並將值寫入observable
+                        self.lastInputWasValid(true);
+                        self.acceptedNumericValue(value);
+                    }
+                }
+            });
+        }
+
+        $(function ()
+        {
+            ko.applyBindings(new MyViewModel());
+        });
+    </script>
+    <style>
+        body, input {
+            font-size: 9pt;
+        }
+    </style>
+</head>
+<body>
+    <h2>KO練習17 - ko.computed實現資料檢核</h2>
+    <hr />
+    <p>
+        請輸入數字:
+        <input data-bind="value: attemptedValue" />
+        ViewModel儲存值=<span data-bind="text: acceptedNumericValue"></span>
+    </p>
+    <div data-bind="visible: !lastInputWasValid()" style="color: red">非有效數字!</div>
+    <hr />
+    <a href="PracticeIndex.html">首頁</a>
+</body>
+</html>

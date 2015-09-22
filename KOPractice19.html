@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>KO Practice19 下拉選單連動效果</title>
+    <script src="Scripts/jquery-2.1.0.min.js"></script>
+    <script src="Scripts/knockout-3.0.0.js"></script>
+    <script src="Scripts/TaiwanZip.js"></script>
+
+    <script type="text/javascript">
+        //由taiwanZips取出程式清單
+        var cityNames = [];
+        for (var propName in taiwanZipData)
+            cityNames.push(propName);
+
+        function MyViewModel()
+        {
+            var self = this;
+            //cities為所有縣市名稱組成的observableArray
+            self.cities = ko.observableArray(cityNames);
+
+            //city用來儲存目前挑選的縣市名稱
+            self.city = ko.observable();
+
+            //areas為一computed，會傳回city縣市所屬鄉鎮市區資料物件陣列
+            self.areas = ko.computed(function ()
+            {
+                var areaData = taiwanZipData[self.city()];
+                var options = [];
+                if (areaData)
+                {
+                    for (var propName in areaData)
+                    {
+                        options.push({
+                            value: propName + areaData[propName],
+                            text: propName
+                        });
+                    }
+                }
+                return options;
+            });
+            //areaZip用來儲存鄉鎮市區加郵遞區號資料
+            self.areaZip = ko.observable();
+            //可寫式computed
+            //用以傳回"台北市大安區106"格式之city + areaZip資料
+            //變更內容時，會將"台北市大安區106"格式解析並更新至city與areaZip
+            self.addrPrefix = ko.computed({
+                read: function ()
+                {
+                    return (self.city() || "") + (self.areaZip() || "");
+                },
+                write: function (value)
+                {
+                    if (value.length >= 3)
+                    {
+                        self.city(value.substr(0, 3));
+                    }
+                    if (value.length > 3)
+                    {
+                        self.areaZip(value.substr(3));
+                    }
+                }
+            });
+        }
+
+        $(function ()
+        {
+            ko.applyBindings(new MyViewModel());
+        });
+    </script>
+</head>
+<body>
+    <h2>KO練習19 - 下拉選單連動效果</h2>
+    <hr />
+    <select data-bind="options: cities, optionsCaption: '選擇縣市', value: city"></select>
+    <select data-bind="options: areas, optionsCaption: '選擇區域', optionsText: 'text', optionsValue: 'value', value: areaZip"></select>
+    <input data-bind="value: addrPrefix, valueUpdate: 'afterkeydown'" />
+    <br />
+    <span style="font-size: 8pt">INPUT連動SELECT測試: 在INPUT貼入"<span style="color: red">台北市大安區106</span>"後，會馬上切換
+    </span>
+    <hr />
+    <a href="PracticeIndex.html">首頁</a>
+</body>
+</html>

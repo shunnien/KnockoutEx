@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>KO Practice27 ViewModel物件的擴充</title>
+    <script src="Scripts/jquery-2.1.0.min.js"></script>
+    <script src="Scripts/knockout-3.0.0.js"></script>
+
+    <script type="text/javascript">
+
+        //透過CodeGen自動產生的ViewModel
+        function VMBoo()
+        {
+        	// <field name='foo' type='Number'> test description </field>
+            var self = this;
+            self.foo = ko.observable(1);
+            //CodeGen時額外呼叫透過prototype定義的init
+            if (this.init) this.init(self);
+        }
+        //宣告額外的init函式
+        VMBoo.prototype.init = function (self)
+        {
+            self.fooPlusX = ko.computed(function ()
+            {
+                return self.foo() + "X";
+            });
+        };
+
+        var vm = new VMBoo();
+        ko.applyBindings(vm);
+
+    </script>
+</head>
+<body>
+    <h2>KO練習27 - ViewModel物件的擴充</h2>
+    <hr />
+    <input data-bind="value: foo" />
+    <div>fooPlusX = <span data-bind="text: fooPlusX"></span></div>
+    <hr />
+    <a href="PracticeIndex.html">首頁</a>
+</body>
+</html>

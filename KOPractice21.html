@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>KO Practice21 指定顯示格式</title>
+    <script src="Scripts/jquery-2.1.0.min.js"></script>
+    <script src="Scripts/knockout-3.0.0.js"></script>
+    <script src="http://cdn.kendostatic.com/2014.1.318/js/kendo.all.min.js"></script>
+
+    <script type="text/javascript">
+        // 對應範例 12 自訂
+        ko.bindingHandlers["formatText"] = {
+            update: function (element, valueAccessor, allBindingsAccessor, viewModel)
+            {
+                // 使用 kendo.toString 進行日期格式轉換
+                $(element).text(kendo.toString(
+                    ko.utils.unwrapObservable(valueAccessor()),
+                    allBindingsAccessor().format));
+            }
+        };
+
+        function MyViewModel()
+        {
+            var self = this;
+            self.dateTime = ko.observable(new Date());
+            self.date = ko.observable(new Date(2014, 04, 12));
+            self.num = ko.observable(1234.567);
+            self.perc = ko.observable(0.1234);
+        }
+        $(function ()
+        {
+            ko.applyBindings(new MyViewModel());
+        });
+    </script>
+    <style>
+        .hi {
+            color: blue;
+            background-color: #f8c705;
+            width: 320px;
+        }
+    </style>
+</head>
+<body>
+    <h2>KO練習21 - 指定顯示格式</h2>
+    <hr />
+    <dl>
+        <dt>DateTime (raw)</dt>
+        <dd data-bind="text: dateTime"></dd>
+        <dt>DateTime HH:mm:ss</dt>
+        <dd class="hi"
+            data-bind="formatText: dateTime, format: 'HH:mm:ss'"></dd>
+        <dt>Date (raw)</dt>
+        <dd data-bind="text: date"></dd>
+        <dt>Date yyyy/MM/dd</dt>
+        <dd class="hi"
+            data-bind="formatText: date, format: 'yyyy/MM/dd'"></dd>
+        <dt>Number (raw)</dt>
+        <dd data-bind="text: num"></dd>
+        <dt>Number N1</dt>
+        <dd class="hi"
+            data-bind="formatText: num, format: 'n1'"></dd>
+        <dt>Percentage (raw)</dt>
+        <dd data-bind="text: perc"></dd>
+        <dt>Percentage p1</dt>
+        <dd class="hi"
+            data-bind="formatText: perc, format: 'p1'"></dd>
+    </dl>
+    <hr />
+    <a href="PracticeIndex.html">首頁</a>
+</body>
+</html>

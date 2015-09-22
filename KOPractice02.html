@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>KO Practice02 下拉選單</title>
+
+        <script src="Scripts/jquery-2.1.0.min.js"></script>
+        <script src="Scripts/knockout-3.0.0.js"></script>
+
+        <script type="text/javascript">
+            function MyViewModel() {
+                var self = this;
+                self.SelectOptions = [
+                    { ot: "第一項", ov: "01" },
+                    { ot: "第二項", ov: "02" },
+                    { ot: "第三項", ov: "03" },
+                    { ot: "第四項", ov: "04" },
+                    { ot: "第五項", ov: "05" }
+                ];
+                self.result = ko.observable("02");
+                self.changeTo = function () {
+                    self.result("04");
+                };
+            }
+            $(function () {
+                ko.applyBindings(new MyViewModel());
+            });
+        </script>
+    </head>
+    <body>
+        <h2>KO練習02 - 下拉選單</h2>
+        <hr />
+        <select data-bind="options: SelectOptions, optionsText: 'ot', optionsValue: 'ov', value: result"></select>
+        <br />
+        <span>下拉選單選擇項目：</span><span data-bind="text: result"></span>
+        <br />
+        <input type="button" value="設定為第四項" data-bind="click: changeTo" />
+        <br />
+        <hr />
+        <a href="PracticeIndex.html">首頁</a>
+    </body>
+</html>

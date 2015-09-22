@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>KO Practice13 Template範本功能</title>
+        <script src="Scripts/jquery-2.1.0.min.js"></script>
+        <script src="Scripts/knockout-3.0.0.js"></script>
+
+        <script type="text/html" id="contactTmpl">
+            <dl class='cont-block'>
+                <dt>Name</dt>
+                <dd data-bind="text: name"></dd>
+                <dt>Phone</dt>
+                <dd data-bind="text: phone"></dd>
+            </dl>
+        </script>
+
+        <script type="text/javascript">
+            function Contact(name, phone)
+            {
+                this.name = name;
+                this.phone = phone;
+            }
+
+            function MyViewModel()
+            {
+                var self = this;
+                self.leader = ko.observable();
+                self.members = ko.observableArray();
+                self.afterRenderEvent = function (elements)
+                {
+                    //依範本產生元素後觸發，加上閃爍動畫
+                    $(elements).find("dd")
+                    .animate({ opacity: 0 }, 500)
+                    .animate({ opacity: 1 }, 500);
+                };
+            }
+            $(function ()
+            {
+                var vm = new MyViewModel();
+                vm.leader(new Contact("美國隊長", "0800092000"));
+                vm.members.push(new Contact("鋼鐵人", "28825252"));
+                vm.members.push(new Contact("索爾", "23939889"));
+                vm.members.push(new Contact("浩克", "0800956956"));
+                ko.applyBindings(vm);
+            });
+        </script>
+
+        <style>
+            .cont-block
+            {
+                font-family: Segoe UI;
+                font-size: 10pt;
+                border: 1px solid gray;
+                padding: 5px;
+                width: 135px;
+                border-radius: 4px;
+                box-shadow: 5px 5px 10px #444;
+            }
+
+            .memb-list .cont-block
+            {
+                /*float: left;*/
+                margin-right: 15px;
+            }
+
+            dt
+            {
+                font-weight: bold;
+                color: purple;
+            }
+
+            dd
+            {
+                color: brown;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>KO練習13 - Template範本功能</h2>
+        <hr />
+        <h3>Leader</h3>
+        <div data-bind="template: { name: 'contactTmpl', data: leader, afterRender: afterRenderEvent }"></div>
+        <br />
+        <h3>Members</h3>
+        <div data-bind="template: { name: 'contactTmpl', foreach: members }" class='memb-list'></div>
+        <hr />
+        <a href="PracticeIndex.html">首頁</a>
+    </body>
+</html>

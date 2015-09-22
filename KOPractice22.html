@@ -1,0 +1,112 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>KO Practice22 密碼複雜度檢核的貼心提示</title>
+    <script src="Scripts/jquery-2.1.0.min.js"></script>
+    <script src="Scripts/knockout-3.0.0.js"></script>
+
+    <script type="text/javascript">
+        function MyViewModel()
+        {
+            var self = this;
+            self.password = ko.observable("");
+            self.pwdConfirm = ko.observable("");
+            self.pwdRule1 = ko.computed(function ()
+            {
+                //至少一個英文字母
+                return self.password().match(/[A-Za-z]/);
+            });
+            self.pwdRule2 = ko.computed(function ()
+            {
+                //至少一個數字
+                return self.password().match(/[0-9]/);
+            });
+            self.pwdRule3 = ko.computed(function ()
+            {
+                //至少8個字元
+                return self.password().length > 7;
+            });
+            self.allPass = ko.computed(function ()
+            {
+                return self.pwdRule1() && self.pwdRule2() && self.pwdRule3();
+            });
+            self.match = ko.computed(function ()
+            {
+                return self.pwdConfirm().length > 0 &&
+                       self.password() == self.pwdConfirm();
+            });
+        }
+
+        $(function ()
+        {
+            ko.applyBindings(new MyViewModel());
+        });
+    </script>
+    <style>
+        *
+        {
+            padding: 2px;
+            font-size: 10pt;
+        }
+
+        /*停用IE10密碼欄位的小眼睛*/
+        ::-ms-reveal
+        {
+            display: none;
+        }
+
+        .rules
+        {
+            margin-left: 0px;
+        }
+
+        .rules li
+        {
+            list-style-type: none;
+            margin-left: 0px;
+            border-left-style: solid;
+            border-left-width: 5px;
+            border-left-color: #808080;
+            background-color: #C0C0C0;
+            margin-bottom: 4px;
+            padding: 4px;
+        }
+
+        li.pass
+        {
+            border-left-color: #087521;
+            background-color: #bedd71;
+        }
+
+        .accept
+        {
+            background-image: url("../images/accept.png");
+            background-repeat: no-repeat;
+            background-position-x: 99%;
+            background-position-y: 50%;
+        }
+    </style>
+</head>
+<body>
+    <h2>KO練習22 - 密碼複雜度檢核的貼心提示</h2>
+    <hr />
+    <ul class="rules">
+        <li data-bind="css: { pass: pwdRule1() }">至少一個英文字母</li>
+        <li data-bind="css: { pass: pwdRule2() }">至少一個數字</li>
+        <li data-bind="css: { pass: pwdRule3() }">至少8個字元</li>
+    </ul>
+    <label for="pwd">設定密碼</label>
+    <div>
+        <input name="pwd" type="password"
+            data-bind="value: password, valueUpdate: 'keyup', css: { accept: allPass() }" />
+    </div>
+    <label for="pwd">密碼確認</label>
+    <div>
+        <input name="pwd" type="text"
+            data-bind="value: pwdConfirm, valueUpdate: 'keyup', css: { accept: match() }" />
+    </div>
+    <hr />
+    <a href="PracticeIndex.html">首頁</a>
+</body>
+</html>

@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>KO Practice10 checked繫結</title>
+        <script src="Scripts/jquery-2.1.0.min.js"></script>
+        <script src="Scripts/knockout-3.0.0.js"></script>
+
+        <script type="text/javascript">
+            function MyViewModel()
+            {
+                var self = this;
+                //Radio對應到Value值
+                self.contOption = ko.observable("phone");
+                //單一Checkbox對應到true/false
+                self.singleCbx = ko.observable(true);
+                //多個Checkbox對應到Value值組成的字串陣列
+                self.cbxItems = ko.observableArray(["PC", "NB"]);
+            }
+
+            $(function ()
+            {
+                ko.applyBindings(new MyViewModel());
+            });
+        </script>
+
+        <style>
+            body, input
+            {
+                font-size: 9pt;
+            }
+
+            fieldset
+            {
+                margin-top: 10px;
+                width: 300px;
+                padding: 5px;
+            }
+
+            dt, dd
+            {
+                float: left;
+                width: 120px;
+                height: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>KO練習10 - checked繫結</h2>
+        <hr />
+        <div>
+            聯絡方式選擇:
+            <input type="radio" name="contactOption" value="phone" data-bind="checked: contOption" />電話
+            <input type="radio" name="contactOption" value="email" data-bind="checked: contOption" />Email
+        </div>
+        <div>
+            (與下拉選單連動:
+            <select data-bind="value: contOption">
+                <option value="phone">電話</option>
+                <option value="email">Email</option>
+            </select>)
+        </div>
+        <div>
+            單一 CheckBox:
+            <input type="checkbox" data-bind="checked: singleCbx" />
+        </div>
+        <div>
+            多 CheckBox 對應陣列:
+            <input type="checkbox" data-bind="checked: cbxItems" value="PC"/>PC
+            <input type="checkbox" data-bind="checked: cbxItems" value="NB" />NB
+            <input type="checkbox" data-bind="checked: cbxItems" value="Phone" />Phone
+        </div>
+        <fieldset>
+            <legend>物件屬性對應</legend>
+            <dl>
+                <dt>contOption 屬性</dt>
+                <dd data-bind="text: contOption"></dd>
+                <dt>singleCbx 屬性</dt>
+                <dd data-bind="text: singleCbx"></dd>
+                <dt>cbxItems 屬性</dt>
+                <dd>
+                    <div data-bind="foreach: cbxItems">
+                        <span data-bind="text: $data"></span>
+                    </div>
+                </dd>
+            </dl>
+        </fieldset>
+        <hr />
+        <a href="PracticeIndex.html">首頁</a>
+    </body>
+</html>

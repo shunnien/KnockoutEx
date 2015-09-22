@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>KO Practice23 單選或多選兩用Checkbox清單</title>
+    <script src="Scripts/jquery-2.1.0.min.js"></script>
+    <script src="Scripts/knockout-3.0.0.debug.js"></script>
+    <!--<script src="Scripts/knockout-3.0.0.js"></script>-->
+    <!--<script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/2.2.1/knockout-min.js"></script>-->
+
+    <script type="text/javascript">
+        //互斥點選的checkbox
+        ko.bindingHandlers.xorChkValue = {
+            update: function (element, valueAccessor, allBindingsAccessor, viewModel)
+            {
+
+                var $elem = $(element); //應為select
+                var val = valueAccessor();
+                var settings = allBindingsAccessor();
+                //檢查是否為多選
+                var multiple = "push" in val;
+                //支援自訂顏色
+                var color = settings.xorChkColor || "blue";
+                //取得<select>後方的元素
+                var $next = $elem.next();
+                var $container;
+                //取後方已有容器元素，清空即可
+                if ($next.hasClass("xor-checks"))
+                {
+                    $container = $next;
+                    $container.empty();
+                }
+                else
+                { //否則建立容器
+                    $container = $("<span class='xor-checks'></span>");
+                    //加入對label及checkbox的點擊行為
+                    $container.on("click", "input,label", function ()
+                    {
+                        //點擊label時透過prev()找到checkbox
+                        var inp = this;
+                        if (this.tagName.toLowerCase() === "label")
+                        {
+                            inp = $(this).prev()[0];
+                            inp.checked = !inp.checked; //切換選取
+                        }
+
+                        //console.log(inp.checked);
+                        if (multiple)
+                        { //多選時, 視狀態決定新增或移除
+                            if (inp.checked)
+                            {
+                                if ($.inArray(inp.value, val()) == -1)
+                                    val.push(inp.value);
+                            }
+                            else
+                            {
+                                val.remove(inp.value);
+                            }
+                        }
+                        else
+                        { //單選
+                            inp.checked = true;
+                            val(inp.value);
+                        }
+                    });
+                }
+                $elem.find("option").each(function ()
+                {
+                    var $cbx = $("<span><input type='checkbox' /><label /></span>");
+                    var checked =
+                        multiple ? $.inArray(this.value, val()) != -1 :
+                        val() == this.value;
+                    $cbx.find("input").val(this.value).prop("checked", checked);
+                    $cbx.find("label").text(this.text).css("color", checked ? color : "");
+                    $container.append($cbx);
+                });
+                $elem.after($container);
+                $elem.hide();
+            },
+
+        };
+
+        var c = 1;
+        function MyViewModel()
+        {
+            var self = this;
+            self.categories = ko.observableArray();
+
+            // 單選的選取選項
+            self.category = ko.observable("Desktop");
+
+            // 多選的選取選項
+            self.selCatgs = ko.observableArray(["Desktop", "Tablet"]);
+            self.selCatgsText = ko.computed(function ()
+            {
+                return JSON.stringify(self.selCatgs());
+            });
+
+            self.addOption = function ()
+            {
+                self.categories.push({ t: "Extra-" + c, v: c });
+                c++;
+            };
+            //self.addOption = ko.computed({
+            //    read: self.category,
+            //    write: function (value)
+            //    {
+            //        self.categories.push({ t: "Extra-" + c, v: c });
+            //        c++;
+            //    }
+            //});
+        }
+
+        var vm = new MyViewModel();
+        //vm.categories.extend({ rateLimit: 50 });
+
+        //直接訂閱，在屬性變化時執行指定邏輯
+        //vm.addOption.subscribe(function ()
+        //{
+        //    vm.categories.push({ t: "Extra-" + c, v: c });
+        //    c++;
+        //});
+
+        vm.categories.push({ t: "Desktop", v: "Desktop" });
+        vm.categories.push({ t: "Phone", v: "Phone" });
+        vm.categories.push({ t: "Tablet", v: "Tablet" });
+        vm.categories.push({ t: "TV", v: "TV" });
+
+        $(function ()
+        {
+            ko.applyBindings(vm);
+
+        });
+    </script>
+</head>
+<body>
+    <h2>KO練習23 - 單選或多選兩用Checkbox清單</h2>
+    <hr />
+    <input type='button' data-bind="event: { click: addOption }" value="Add Option" />
+    <!--<input type='button' data-bind="click: addOption" value="Add Option" />-->
+    <br />
+    單選: 
+    <select data-bind="options: categories, optionsText: 't', optionsValue: 'v', value: category, xorChkValue: category, xorChkColor: 'red'"></select>
+    <br />
+    <span data-bind="text: category"></span>
+    <br />
+    多選:
+  <select data-bind="options: categories, optionsText: 't', optionsValue: 'v', selectedOptions: selCatgs, xorChkValue: selCatgs" multiple="true">
+  </select>
+    <br />
+    <span data-bind="text: selCatgsText"></span>
+    <hr />
+    <a href="PracticeIndex.html">首頁</a>
+</body>
+</html>

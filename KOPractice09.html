@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>KO Practice09 事件繫結</title>
+
+        <script src="Scripts/jquery-2.1.0.min.js"></script>
+        <script src="Scripts/knockout-3.0.0.js"></script>
+
+        <script type="text/javascript">
+            function MyViewModel()
+            {
+                var self = this;
+                var origBgColor = "#444";
+                self.colors = ["Red", "Green", "Blue"];
+                self.bgColor = ko.observable(origBgColor);
+                self.miceOver = function (data)
+                {
+                    self.bgColor(data);
+                };
+                self.miceOut = function ()
+                {
+                    self.bgColor(origBgColor);
+                };
+            }
+
+            $(function ()
+            {
+                ko.applyBindings(new MyViewModel());
+            });
+        </script>
+        <style>
+            .block
+            {
+                width: 50px;
+                height: 50px;
+                border: 2px dotted gray;
+                cursor: pointer;
+                /*float: left;*/
+                text-align: center;
+                margin-right: 10px;
+                background-color: white;
+                line-height: 50px;
+            }
+        </style>
+    </head>
+    <body data-bind="style: { 'backgroundColor': bgColor }">
+        <h2>KO練習09 - 事件繫結</h2>
+        <hr />
+        <div data-bind="foreach: colors">
+            <div class="block"
+                data-bind="event: { mouseover: $root.miceOver, mouseout: $root.miceOut }, style: { color: $data }, text: $data">
+            </div>
+        </div>
+        <hr />
+        <a href="PracticeIndex.html">首頁</a>
+    </body>
+</html>

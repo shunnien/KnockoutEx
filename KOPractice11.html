@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>KO Practice11 hasfocus繫結</title>
+        <script src="Scripts/jquery-2.1.0.min.js"></script>
+        <script src="Scripts/knockout-3.0.0.js"></script>
+
+        <script type="text/javascript">
+            function MyViewModel()
+            {
+                var self = this;
+                self.name = ko.observable();
+                self.score = ko.observable();
+                self.nameFocus = ko.observable(false);
+                self.setFocus = function ()
+                {
+                    self.nameFocus(true);
+                };
+            }
+
+            $(function ()
+            {
+                ko.applyBindings(new MyViewModel());
+            });
+        </script>
+        <style>
+            body, input
+            {
+                font-size: 10pt;
+                line-height: 25px;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>KO練習11 - hasfocus繫結</h2>
+        <hr />
+        姓名:
+        <input type="text" data-bind="hasfocus: nameFocus, value: name" />
+        <span data-bind="visible: nameFocus">* 請輸入姓名</span>
+        <br />
+        積分:
+        <input type="text" data-binding="value: score" />
+        <br />
+        <input type="button" value="Set Focus" data-bind="click: setFocus" />
+        nameFocus=<span data-bind="text: nameFocus"></span>
+        <hr />
+        <a href="PracticeIndex.html">首頁</a>
+    </body>
+</html>

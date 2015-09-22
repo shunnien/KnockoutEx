@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>KO Practice24 Kendo輸入欄位唯讀切換</title>
+    <script src="Scripts/jquery-2.1.0.min.js"></script>
+    <script src="Scripts/knockout-3.0.0.debug.js"></script>
+    <!--<script src="Scripts/knockout-3.0.0.js"></script>-->
+    <script src="http://cdn.kendostatic.com/2014.1.318/js/kendo.all.min.js"></script>
+    <link rel="stylesheet" href="http://cdn.kendostatic.com/2014.1.318/styles/kendo.common.min.css" />
+    <link rel="stylesheet" href="http://cdn.kendostatic.com/2014.1.318/styles/kendo.metro.min.css" />
+
+    <script type="text/javascript">
+        //由特定值的true/false決定啟用或停用Kendo DatePicker及NumericTextBox
+        ko.bindingHandlers["kendoEnable"] = {
+            update: function (element, valueAccessor, allBindingsAccessor, viewModel)
+            {
+                var $inp = $(element);
+                var kendoObject = $inp.data("kendoDatePicker") || $inp.data("kendoNumericTextBox");
+                var val = ko.utils.unwrapObservable(valueAccessor());
+                if (val)
+                {
+                    kendoObject.enable();
+                    $inp.removeClass("a-readonly");
+                }
+                else
+                {
+                    kendoObject.readonly();
+                    $inp.addClass("a-readonly");
+                }
+            }
+        };
+        function myViewModel()
+        {
+            var self = this;
+            self.RegDate = ko.observable("2014-04-13");
+            self.Points = ko.observable(32767);
+            self.InpEnabled = ko.observable(true);
+            self.toggleEnable = function () { self.InpEnabled(!self.InpEnabled()); };
+        }
+        var vm = new myViewModel();
+        ko.applyBindings(vm);
+    </script>
+</head>
+<body>
+    <h2>KO練習24 - Kendo輸入欄位唯讀切換</h2>
+    <hr />
+    <form>
+        <label>
+            <span class="label">Text</span>
+            <input data-bind="enable: InpEnabled">
+            <input type="checkbox" data-bind="enable: InpEnabled">
+        </label>
+        <label>
+            <span class="label">TextArea</span>
+            <textarea data-bind="enable: InpEnabled"></textarea>
+        </label>
+        <label>
+            <span class="label">Select</span>
+            <select data-bind="enable: InpEnabled">
+                <option>A</option>
+            </select>
+        </label>
+        <label>
+            <span class="label">Register Date:</span>
+            <span class="k-widget k-datepicker k-header">
+                <span class="k-picker-wrap k-state-default">
+                    <input type="text" data-bind="kendoDatePicker: { value: RegDate, format: 'yyyy-MM-dd' }, kendoEnable: InpEnabled" data-role="datepicker" class="k-input" role="textbox" aria-haspopup="true" aria-expanded="false" aria-disabled="false" aria-readonly="false" aria-label="Current focused date is Wednesday, July 04, 2012" style="width: 100%;">
+                    <span unselectable="on" class="k-select" role="button">
+                        <span unselectable="on" class="k-icon k-i-calendar">select</span>
+                    </span>
+                </span>
+            </span>
+        </label>
+        <label>
+            <span class="label">Points:</span>
+            <span class="k-widget k-numerictextbox">
+                <span class="k-numeric-wrap k-state-default k-expand-padding">
+                    <input type="text" class="k-formatted-value k-input" tabindex="0" aria-disabled="false" aria-readonly="false" style="display: inline-block;">
+                    <input type="text" data-bind="kendoNumericTextBox: { value: Points, spinners: false, decimals: 0, format: 'n0' }, kendoEnable: InpEnabled" data-role="numerictextbox" role="spinbutton" class="k-input" aria-valuenow="32767" aria-disabled="false" aria-readonly="false" style="display: none;">
+                    <span class="k-select" style="display: none;">
+                        <span unselectable="on" class="k-link">
+                            <span unselectable="on" class="k-icon k-i-arrow-n" title="Increase value">Increase value</span>
+                        </span>
+                        <span unselectable="on" class="k-link">
+                            <span unselectable="on" class="k-icon k-i-arrow-s" title="Decrease value">Decrease value</span>
+                        </span>
+                    </span>
+                </span>
+            </span>
+        </label>
+    </form>
+    <input type="button" value="Toggle Readonly" data-bind="click: toggleEnable">
+    <hr />
+    <a href="PracticeIndex.html">首頁</a>
+</body>
+</html>

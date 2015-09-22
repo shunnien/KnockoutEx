@@ -1,0 +1,127 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>KO Practice05 即時反應物件屬性變化</title>
+        <script src="Scripts/jquery-2.1.0.min.js"></script>
+        <script src="Scripts/knockout-3.0.0.js"></script>
+
+        <script type="text/javascript">
+
+            function UserViewModel(id, name, score)
+            {
+                var self = this;
+                self.id = id;
+                self.name = name;
+                
+                //改為observalbe 
+                self.score = ko.observable(score);
+            }
+
+            function MyViewModel()
+            {
+                var self = this;
+                self.users = ko.observableArray();
+
+                //移除User，輸入參數為user物件
+                //foreach產生的元素，click事件時會帶入該元素所繫結的資料物件
+                self.removeUser = function (user)
+                {
+                    self.users.remove(user);
+                };
+
+                //分數加總，透過神奇的 Dendency Tracking 功能
+                //一旦有任何User分數更動，它就會自動更新
+                self.totalScore = ko.computed(function ()
+                {
+                    var total = 0;
+                    $.each(self.users(), function (i, u)
+                    {
+                        //改用.score()
+                        total += u.score();
+                    });
+                    return total;
+                });
+            }
+
+            $(function ()
+            {
+                var vm = new MyViewModel();
+                //預先增加一些User
+                vm.users.push(new UserViewModel("M1", "Test11", 32767));
+                vm.users.push(new UserViewModel("M2", "test0002", 65535));
+
+                //按鈕時動態增加User
+                var c = 2;
+                $("#btnAddUser").click(function ()
+                {
+                    var now = new Date(); //用時間產生隨機屬性值
+                    vm.users.push(new UserViewModel(
+                        "M" + c++,
+                        "P" + "-" + now.getSeconds() * now.getMilliseconds(),
+                        now.getMilliseconds()));
+                });
+
+                //測試 Score 變更
+                $("#btnChgScore").click(function ()
+                {
+                    vm.users()[0].score(9999);
+                });
+
+                ko.applyBindings(vm);
+            });
+        </script>
+
+        <style>
+            table
+            {
+                width: 400px;
+            }
+
+            td, th
+            {
+                border: 1px solid gray;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>KO練習05 - 即時反應物件屬性變化</h2>
+        <hr />
+        <input type="button" value="新增User" id="btnAddUser" />
+        共
+        <span data-bind="text: users().length"></span>
+        筆，合計
+        <span data-bind="text: totalScore"></span>
+        分
+        <table>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>姓名</th>
+                    <th>積分</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: users">
+                <tr>
+                    <td>
+                        <span data-bind="text: id"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: name"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: score" style='text-align: right'></span>
+                    </td>
+                    <td>
+                        <a href='#' data-bind="click: $root.removeUser">移除</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <input type="button" value="測試Score變更" id="btnChgScore" />
+        <hr />
+        <a href="PracticeIndex.html">首頁</a>
+    </body>
+</html>

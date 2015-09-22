@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>KO Practice07 visible, disable, css繫結</title>
+        <script src="Scripts/jquery-2.1.0.min.js"></script>
+        <script src="Scripts/knockout-3.0.0.js"></script>
+
+        <script type="text/javascript">
+
+            function MyViewModel()
+            {
+                var self = this;
+                self.done = ko.observable(false);
+                self.task = ko.observable("寫作業");
+            }
+
+            $(function ()
+            {
+                ko.applyBindings(new MyViewModel());
+            });
+        </script>
+        <style>
+            .urgent
+            {
+                background-color: #ffcccc;
+                border: 1px solid red;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>KO練習07 - visible, disable, css繫結</h2>
+        <hr />
+        <input type="checkbox" data-bind="checked: done" />
+        <input type="text" style="width: 200px;"
+            data-bind="disable: done, value: task, css: { urgent: task().indexOf('急') > -1 }" />
+        <span data-bind="visible: done">完成!</span>
+        <!-- 補充: 還有html, style, attr -->
+        <hr />
+        <a href="PracticeIndex.html">首頁</a>
+    </body>
+</html>

@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>KO Practice20 輸入員編帶出員工姓名</title>
+    <script src="Scripts/jquery-2.1.0.min.js"></script>
+    <script src="Scripts/knockout-3.0.0.js"></script>
+
+    <script type="text/javascript">
+        $.ajaxSettings.cache = false;
+        function MyViewModel()
+        {
+            var self = this;
+            self.userId = ko.observable();
+            self.userName = ko.observable();
+
+            //允許暫時停用姓名查詢
+            var disableNameLookup = false;
+            ko.computed(function ()
+            {
+                //不論是否觸發Ajax查詢，都讀取userId()以保持相依性
+                var empNo = self.userId();
+                if (!disableNameLookup)
+                {
+                    $.getJSON("EmpData.ashx", { u: self.userId() },
+                    function (res)
+                    {
+                        if (res.EmpNo !== null)
+                        {
+                            //先暫停Ajax查詢
+                            disableNameLookup = true;
+                            self.userId(res.EmpNo);
+                            //恢復Ajax查詢
+                            disableNameLookup = false;
+                        }
+                        self.userName(res.EmpName);
+                    });
+                }
+            });
+
+        }
+        $(function ()
+        {
+            ko.applyBindings(new MyViewModel());
+        });
+    </script>
+
+    <style>
+        body, input {
+            font-size: 9pt;
+        }
+
+        .user-name {
+            background-color: #C0C0C0;
+        }
+    </style>
+</head>
+<body>
+    <h2>KO練習20 - 輸入員編帶出員工姓名</h2>
+    <hr />
+    員編:
+    <input type="text" data-bind="value: userId" style="width: 50px;" />
+    <input type="text" data-bind="value: userName" class="user-name" readonly />
+    <br />
+    <span>有效員編: "0001"-"0141"</span>
+    <hr />
+    <a href="PracticeIndex.html">首頁</a>
+</body>
+</html>

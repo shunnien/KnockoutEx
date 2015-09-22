@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>KO Practice18 整合Ajax</title>
+    <script src="Scripts/jquery-2.1.0.min.js"></script>
+    <script src="Scripts/knockout-3.0.0.js"></script>
+
+    <script type="text/javascript">
+        function MyViewModel()
+        {
+            var self = this;
+            self.results = ko.observableArray();
+            self.keyword = ko.observable("");
+            //底下的computed函數引用了keyword(), 依KO會自動追查相依性的特色，
+            //一旦keyword發生變動，這個函數就會被觸發執行
+            //而$.getJSON()的第三個參數直接用observableArray去接收AJAX傳回資料陣列
+            //ko.computed(function ()
+            //{
+            //    $.getJSON("ColorData.ashx", { k: self.keyword() },self.results);
+            //});
+
+            //延遲 200 毫秒再行回傳 ajax 
+            ko.computed(function ()
+            {
+                $.getJSON("ColorData.ashx", { k: self.keyword() },
+                    self.results);
+            }).extend({ throttle: 200 });
+        }
+
+        $(function ()
+        {
+            ko.applyBindings(new MyViewModel());
+        });
+    </script>
+</head>
+<body>
+    <h2>KO練習18 - 整合Ajax</h2>
+    <hr />
+    <div>
+        Keyword:
+        <input data-bind="value: keyword" />
+        Keyword:(輸入後馬上更新)
+        <input data-bind="value: keyword, valueUpdate: 'afterkeydown'" />
+        <ul data-bind="foreach: results">
+            <li><span data-bind="text: $data"></span></li>
+        </ul>
+    </div>
+    <hr />
+    <a href="PracticeIndex.html">首頁</a>
+</body>
+</html>

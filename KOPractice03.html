@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>KO Practice03 動態新增下拉選單選項</title>
+
+        <script src="Scripts/jquery-2.1.0.min.js"></script>
+        <script src="Scripts/knockout-3.0.0.js"></script>
+
+        <script type="text/javascript">
+            function MyViewModel()
+            {
+                var self = this;
+                //希望陣列結果變動時能馬上回饋到UI上，則使用ko.observableArray()
+                //宣告時先放入一個選項，之後再動態增加
+                this.SelectOptions = ko.observableArray([
+                    { ot: "第一項", ov: "01" },
+                    { ot: "第二項", ov: "02" },
+                    { ot: "第三項", ov: "03" }
+                ]);
+                this.result = ko.observable("02");
+            }
+
+            $(function ()
+            {
+                var vm = new MyViewModel();
+                ko.applyBindings(vm);
+                $("#btnAddOpt").click(function ()
+                {
+                    vm.SelectOptions.push({
+                        ot: $("#txtOptText").val(),
+                        ov: $("#txtOptValue").val()
+                    });
+                });
+            })
+        </script>
+    </head>
+    <body>
+        <h2>KO練習03 - 動態新增下拉選單選項</h2>
+        <hr />
+        <div>
+            <span>下拉選單：</span>
+            <select data-bind="options: SelectOptions, optionsText: 'ot', optionsValue: 'ov', value: result"></select>
+            <span>下拉選單選取值：</span><span data-bind="text: result"></span>
+        </div>
+        <span>下拉選單新增：</span>
+        <div>
+            <span>Text：</span>
+            <input type="text" value="" id="txtOptText" />
+            <span>Value：</span>
+            <input type="text" value="" id="txtOptValue" />
+        </div>
+        <div>
+            <span>下拉選單新增：</span>
+            <input type="button" value="新增選項" id="btnAddOpt" />
+        </div>
+        <hr />
+        <a href="PracticeIndex.html">首頁</a>
+    </body>
+</html>
